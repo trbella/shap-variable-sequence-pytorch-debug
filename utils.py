@@ -1203,7 +1203,7 @@ def train(model, train_dataloader, val_dataloader, seq_len_dict,
             loss.backward()                                                 # Backpropagate the loss
             optimizer.step()                                                # Update the model's weights
             train_loss += loss                                              # Add the training loss of the current batch
-            mask = (labels <= 1).view_as(scores).float()                    # Create a mask by filtering out all labels that are not a padding value
+            mask = (labels <= 1).reshape(scores).float()                    # Create a mask by filtering out all labels that are not a padding value
             unpadded_labels = torch.masked_select(labels.contiguous().view_as(scores), mask.byte()) # Completely remove the padded values from the labels using the mask
             unpadded_scores = torch.masked_select(scores, mask.byte())      # Completely remove the padded values from the scores using the mask
             pred = torch.round(unpadded_scores)                             # Get the predictions
@@ -1233,7 +1233,7 @@ def train(model, train_dataloader, val_dataloader, seq_len_dict,
                     labels, _ = torch.nn.utils.rnn.pad_packed_sequence(labels, batch_first=True, padding_value=padding_value)
 
                     val_loss += model.loss(scores, labels, x_lengths)               # Calculate and add the validation loss of the current batch
-                    mask = (labels <= 1).view_as(scores).float()                    # Create a mask by filtering out all labels that are not a padding value
+                    mask = (labels <= 1).reshape(scores).float()                    # Create a mask by filtering out all labels that are not a padding value
                     unpadded_labels = torch.masked_select(labels.contiguous().view_as(scores), mask.byte()) # Completely remove the padded values from the labels using the mask
                     unpadded_scores = torch.masked_select(scores, mask.byte())      # Completely remove the padded values from the scores using the mask
                     pred = torch.round(unpadded_scores)                             # Get the predictions
